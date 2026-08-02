@@ -7,7 +7,7 @@
     "dev": "vite dev",
     "build": "vite build",
     "build:frontend": "vite build",
-    "postbuild": "node -e \"const fs = require('fs'); fs.copyFileSync('index.html', 'dist/client/index.html');\"",
+    "postbuild": "node scripts/postbuild.cjs",
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint": "eslint .",
