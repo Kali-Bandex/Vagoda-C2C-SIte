@@ -339,7 +339,7 @@ export function DetailPage({
 function MerchantBlock({ item, heading = false }: { item: Product; heading?: boolean }) {
   const seller = item.seller;
   return (
-    <section className={heading ? "mt-16 border-t border-border pt-10" : "mt-8"} id="merchant-section">
+    <section className={heading ? "mt-16 border-t border-border pt-10" : "mt-8"}>
       <h2 className="text-xl font-semibold">Merchant Information</h2>
       <div className="mt-6 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-6">
         <div className="flex min-w-0 items-center gap-4">
@@ -356,43 +356,28 @@ function MerchantBlock({ item, heading = false }: { item: Product; heading?: boo
             </p>
             <p className="mt-1 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
               <span className="flex items-center gap-1">
-                <BadgeCheck className="h-3.5 w-3.5 text-price" /> Verified Merchant
+                <BadgeCheck className="h-3.5 w-3.5" /> Verified
               </span>
               <span className="flex items-center gap-1">
-                <ShieldCheck className="h-3.5 w-3.5 text-price" /> Verified ID
+                <ShieldCheck className="h-3.5 w-3.5" /> Verified ID
               </span>
             </p>
           </div>
         </div>
         <div className="flex shrink-0 flex-wrap gap-3">
-          <Link
-            to="/app/message"
-            search={{
-              userId: seller?.id ?? item.sellerId,
-              userName: seller?.name ?? "Merchant",
-              userAvatar: seller?.avatar ?? "https://i.pravatar.cc/120?img=12",
-            }}
-            className="flex items-center gap-2 rounded-md bg-ink px-5 py-3 text-sm font-medium text-ink-foreground transition-opacity hover:opacity-90"
-          >
-            <MessageSquare className="h-4 w-4" /> Message
-          </Link>
-          <a
-            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(seller?.location || item.location)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 rounded-md border border-border bg-background px-5 py-3 text-sm font-medium transition-colors hover:bg-muted"
-          >
-            <Map className="h-4 w-4" /> Direction
-          </a>
-          <button
-            onClick={() => {
-              const el = document.getElementById("reviews-section");
-              el?.scrollIntoView({ behavior: "smooth" });
-            }}
-            className="flex items-center gap-2 rounded-md border border-border bg-background px-5 py-3 text-sm font-medium transition-colors hover:bg-muted"
-          >
-            <ThumbsUp className="h-4 w-4" /> Reviews
-          </button>
+          {[
+            { label: "Message", Icon: MessageSquare },
+            { label: "Direction", Icon: Map },
+            { label: "Reviews", Icon: ThumbsUp },
+          ].map(({ label, Icon }) => (
+            <button
+              key={label}
+              onClick={() => toast.success(`${label} opened`)}
+              className="flex items-center gap-2 rounded-md bg-ink px-5 py-3 text-sm font-medium text-ink-foreground transition-opacity hover:opacity-90"
+            >
+              <Icon className="h-4 w-4" /> {label}
+            </button>
+          ))}
         </div>
       </div>
     </section>
@@ -466,7 +451,7 @@ function ReviewsBlock({ productId }: { productId: string }) {
   }));
 
   return (
-    <section className="mt-12" id="reviews-section">
+    <section className="mt-12">
       {/* Rating Summary */}
       <div className="rounded-xl border border-border p-6">
         <div className="grid items-center gap-8 sm:grid-cols-[auto_minmax(0,1fr)]">
