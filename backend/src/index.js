@@ -23,8 +23,19 @@ const { notFound, errorHandler } = require("./middleware/error");
 
 const app = express();
 
-// Connect to MongoDB Atlas
-connectDB();
+// Trust proxy for secure cookies behind reverse proxies (Vercel / Render / Cloudflare)
+app.set("trust proxy", 1);
+
+// Ensure DB connection before serving API requests
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    console.error("Database connection failure in request middleware:", error.message);
+    res.status(500).json({ message: "Database connection failed. Check server logs and environment variables." });
+  }
+});
 
 // Middleware
 app.use(
@@ -60,8 +71,11 @@ app.get("/api/health", (req, res) => {
 app.use(notFound);
 app.use(errorHandler);
 
-const PORT = process.env.PORT || 5000;
+if (require.main === module) {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`Server running in ${process.env.NODE_ENV || "development"} mode on port ${PORT}`);
+  });
+}
 
-app.listen(PORT, () => {
-  console.log(`Server running in ${process.env.NODE_ENV || "development"} mode on port ${PORT}`);
-});
+module.exports = app;

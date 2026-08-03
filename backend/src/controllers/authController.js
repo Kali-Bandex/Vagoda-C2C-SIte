@@ -10,10 +10,11 @@ const generateRefreshToken = (id) => {
 };
 
 const setRefreshCookie = (res, refreshToken) => {
+  const isProd = process.env.NODE_ENV === "production" || Boolean(process.env.RENDER) || Boolean(process.env.VERCEL);
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    secure: isProd,
+    sameSite: isProd ? "none" : "lax",
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   });
 };
@@ -131,10 +132,11 @@ const refresh = async (req, res, next) => {
 // @route   POST /api/auth/logout
 // @access  Public
 const logout = (req, res) => {
+  const isProd = process.env.NODE_ENV === "production" || Boolean(process.env.RENDER) || Boolean(process.env.VERCEL);
   res.clearCookie("refreshToken", {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    secure: isProd,
+    sameSite: isProd ? "none" : "lax",
   });
   res.json({ message: "Logged out successfully" });
 };

@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { toast } from "sonner";
 import {
   Briefcase,
@@ -48,8 +48,14 @@ const ROLES: { key: Role; Icon: typeof Store }[] = [
 const isSeller = (role: Role) => role !== "buyer";
 
 function AuthPage() {
-  const { signIn, signUp } = useAuth();
+  const { session, ready, signIn, signUp } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (ready && session) {
+      navigate({ to: "/app/overview", replace: true });
+    }
+  }, [ready, session, navigate]);
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [step, setStep] = useState<1 | 2>(1);
   const [role, setRole] = useState<Role>("buyer");
@@ -145,6 +151,19 @@ function AuthPage() {
       navigate({ to: "/app/overview" });
     } catch (err: any) {
       toast.error(err.message || "Authentication failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDemoSignIn = async () => {
+    setLoading(true);
+    try {
+      await signIn({ email: "demo@vagoda.com", password: "Password123!", role });
+      toast.success(`Welcome to your ${ROLE_META[role].dashboard}!`);
+      navigate({ to: "/app/overview" });
+    } catch (err: any) {
+      toast.error(err.message || "Demo login failed");
     } finally {
       setLoading(false);
     }
@@ -294,6 +313,17 @@ function AuthPage() {
                 </>
               )}
             </button>
+
+            {mode === "signin" && (
+              <button
+                type="button"
+                onClick={handleDemoSignIn}
+                disabled={loading}
+                className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-muted/40 px-6 py-3.5 text-sm font-medium text-foreground transition-colors hover:bg-muted disabled:opacity-60"
+              >
+                Sign in with Demo Account
+              </button>
+            )}
           </form>
         )}
 
