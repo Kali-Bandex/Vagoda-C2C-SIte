@@ -106,6 +106,7 @@ export function useStore() {
         next = [...memory.cart, { ...item, qty: item.qty ?? 1 }];
       }
       write({ ...memory, cart: next });
+      openCart();
       toast.success("Added to cart");
     },
     []
