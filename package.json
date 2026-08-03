@@ -2,7 +2,9 @@
     "name": "vagoda-c2c-site",
     "private": true,
     "scripts": {
-        "build:backend": "npm install --prefix backend && npm run build --prefix backend",
+        "dev:backend": "npm run dev --prefix backend",
+        "dev:frontend": "npm run dev --prefix frontend",
+        "build:backend": "npm install --prefix backend",
         "start:backend": "npm run start --prefix backend",
         "build:frontend": "npm install --prefix frontend && npm run build --prefix frontend"
     }
